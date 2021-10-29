@@ -26,9 +26,9 @@ private slots:
 
     void on_pBtnVolume_clicked();
 
-    void setLabelNowValue(int time);
+    void on_horizontalSliderPlayProgress_valueChanged(int time);
 
-    void volumeChange(int volume);
+    void on_horizontalSliderVolume_valueChanged(int volume);
 
 private:
     Ui::MainWindow *ui;

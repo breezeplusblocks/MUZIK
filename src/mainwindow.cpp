@@ -10,9 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->horizontalSliderPlayProgress, &QSlider::valueChanged, this, &MainWindow::setLabelNowValue);
-    connect(ui->horizontalSliderVolume, &QSlider::valueChanged, this, &MainWindow::volumeChange);
-
     playStatus = false;
     playMode = 0;
     muteStatus = false;
@@ -111,14 +108,14 @@ void MainWindow::on_pBtnVolume_clicked() {
 
 }
 
-void MainWindow::setLabelNowValue(int time) {
+void MainWindow::on_horizontalSliderPlayProgress_valueChanged(int time) {
 
     QString now = QTime(0,0,0).addSecs(time).toString(QString::fromStdString("hh:mm:ss"));
     ui->labelNow->setText(now);
 
 }
 
-void MainWindow::volumeChange(int volume) {
+void MainWindow::on_horizontalSliderVolume_valueChanged(int volume) {
 
     std::cout << volume << std::endl;
 
