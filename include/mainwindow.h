@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "playlistdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -30,8 +31,14 @@ private slots:
 
     void on_horizontalSliderVolume_valueChanged(int volume);
 
+    void on_pBtnPlaylist_clicked();
+
+    void setPlaylistDialogPos();
+
 private:
     Ui::MainWindow *ui;
+
+    PlaylistDialog *plDialog;
 
     bool playStatus;
 
@@ -42,5 +49,7 @@ private:
     int volume;
 
     bool muteStatus;
+
+    QPoint plDialogPos;
 };
 #endif // MAINWINDOW_H

@@ -1,6 +1,8 @@
 #include "../include/mainwindow.h"
 #include "../form/ui_mainwindow.h"
 
+#include "../include/playlistdialog.h"
+
 #include <iostream>
 #include <QTime>
 
@@ -9,6 +11,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // initialize playlist dialog
+    plDialog = new PlaylistDialog(this);
+
+    connect(plDialog, &QDialog::rejected, this, &MainWindow::setPlaylistDialogPos);
 
     playStatus = false;
     playMode = 0;
@@ -118,6 +125,24 @@ void MainWindow::on_horizontalSliderPlayProgress_valueChanged(int time) {
 void MainWindow::on_horizontalSliderVolume_valueChanged(int volume) {
 
     std::cout << volume << std::endl;
+
+}
+
+void MainWindow::on_pBtnPlaylist_clicked() {
+
+    if (plDialog->isHidden()) {
+        plDialog->move(plDialogPos);
+        plDialog->show();
+    } else {
+        plDialogPos = plDialog->pos();
+        plDialog->hide();
+    }
+
+}
+
+void MainWindow::setPlaylistDialogPos() {
+
+    plDialogPos = plDialog->pos();
 
 }
 
