@@ -15,6 +15,10 @@ public:
     explicit PlaylistDialog(QWidget *parent = nullptr);
     ~PlaylistDialog();
 
+signals:
+
+    void playAudio(QString audioPath);
+
 private slots:
     void on_pBtnAdd_clicked();
     
@@ -22,12 +26,12 @@ private slots:
 
     void on_pBtnClear_clicked();
 
+    void on_listWidget_doubleClicked();
+
 private:
     Ui::PlaylistDialog *ui;
 
     QStringList *playlist;
-
-
 };
 
 #endif // PLAYLISTDIALOG_H

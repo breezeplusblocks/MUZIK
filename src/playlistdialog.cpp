@@ -44,3 +44,13 @@ void PlaylistDialog::on_pBtnClear_clicked() {
     ui->listWidget->clear();
 
 }
+
+void PlaylistDialog::on_listWidget_doubleClicked() {
+
+    std::cout << ui->listWidget->currentItem()->text().toStdString() << std::endl;
+
+    QString audioPath = ui->listWidget->currentItem()->text();
+
+    emit playAudio(audioPath);
+
+}

@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(plDialog, &QDialog::rejected, this, &MainWindow::setPlaylistDialogPos);
 
+    connect(plDialog, &PlaylistDialog::playAudio, this, &MainWindow::playAudio);
+
     playStatus = false;
     playMode = 0;
     muteStatus = false;
@@ -143,6 +145,28 @@ void MainWindow::on_pBtnPlaylist_clicked() {
 void MainWindow::setPlaylistDialogPos() {
 
     plDialogPos = plDialog->pos();
+
+}
+
+void MainWindow::playAudio(QString audioPath) {
+
+    musicFile.setFileName(audioPath);
+    musicFile.open(QIODevice::ReadOnly);
+
+    format.setSampleRate(44100);
+    format.setChannelCount(1);
+    format.setSampleSize(16);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    audio = new QAudioOutput(format);
+
+    audio->start(&musicFile);
+
+    musicFile.close();
+
+    delete audio;
 
 }
 

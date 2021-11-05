@@ -19,8 +19,8 @@ add_subdirectory(third_party/googletest)
 
 add_subdirectory(test)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Multimedia REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
 
 file(GLOB Headers "./include/*.h")
 file(GLOB Sources "./src/*.cpp")
@@ -58,7 +58,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(MUZIK PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(MUZIK PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
 
 set_target_properties(MUZIK PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

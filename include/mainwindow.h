@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFile>
+#include <QAudioFormat>
+#include <QAudioOutput>
+#include <QAudioDeviceInfo>
 #include "playlistdialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +39,8 @@ private slots:
 
     void setPlaylistDialogPos();
 
+    void playAudio(QString audioPath);
+
 private:
     Ui::MainWindow *ui;
 
@@ -51,5 +57,13 @@ private:
     bool muteStatus;
 
     QPoint plDialogPos;
+    
+    QFile musicFile;
+
+    QAudioFormat format;
+
+    QAudioOutput *audio;
+
+    QAudioDeviceInfo info;
 };
 #endif // MAINWINDOW_H
