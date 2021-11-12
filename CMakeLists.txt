@@ -19,8 +19,8 @@ add_subdirectory(third_party/googletest)
 
 add_subdirectory(test)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Multimedia REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Multimedia Test REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Test REQUIRED)
 
 file(GLOB Headers "./include/*.h")
 file(GLOB Sources "./src/*.cpp")
@@ -34,6 +34,10 @@ set(PROJECT_SOURCES
 )
 
 add_library(example include/example.h src/example.cpp)
+
+include_directories(/opt/lib/ffmpeg/include)
+
+link_directories(/opt/lib/ffmpeg/lib)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MUZIK
@@ -58,7 +62,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(MUZIK PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
+target_link_libraries(MUZIK PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia Qt${QT_VERSION_MAJOR}::Test -lavcodec -lavformat -lavutil -lswresample)
 
 set_target_properties(MUZIK PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

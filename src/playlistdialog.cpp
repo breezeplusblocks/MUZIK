@@ -23,7 +23,7 @@ void PlaylistDialog::on_pBtnAdd_clicked() {
 
     QString caption = "Choose Audio File(s)";
     QString dir = QDir::homePath();
-    QString filter = "Suppoerted Audio Types(*.wav *.mp3 *.wma)";
+    QString filter = "Suppoerted Audio Types(*.aac *.ac3 *.ape *.flac *.mp3 *.ogg *.wav *.wma)";
     QStringList files = QFileDialog::getOpenFileNames(this, caption, dir, filter);
 
     if (files.isEmpty())
