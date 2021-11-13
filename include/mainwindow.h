@@ -6,11 +6,23 @@
 #include <QAudioFormat>
 #include <QAudioOutput>
 #include <QAudioDeviceInfo>
+#include <QtTest/QTest>
 #include "playlistdialog.h"
+
+extern "C" {
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswresample/swresample.h>
+}
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+#define MAX_AUDIO_FRAME_SIZE 192000
+
+extern int channelCount;
+extern int sampleRate;
 
 class MainWindow : public QMainWindow
 {
@@ -39,7 +51,7 @@ private slots:
 
     void setPlaylistDialogPos();
 
-    void playAudio(QString audioPath);
+    void playAudio(const QString& audioPath);
 
 private:
     Ui::MainWindow *ui;
@@ -60,9 +72,11 @@ private:
     
     QFile musicFile;
 
-    QAudioFormat format;
+    QAudioFormat audioFmt;
 
-    QAudioOutput *audio;
+    QAudioOutput *audioOutput;
+
+    QIODevice *streamOut;
 
     QAudioDeviceInfo info;
 };
