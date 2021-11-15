@@ -2,12 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QFile>
 #include <QAudioFormat>
 #include <QAudioOutput>
 #include <QAudioDeviceInfo>
 #include <QtTest/QTest>
 #include "playlistdialog.h"
+#include "ffmpeg.h"
 
 extern "C" {
 #include <libavformat/avformat.h>
@@ -70,8 +70,6 @@ private:
 
     QPoint plDialogPos;
     
-    QFile musicFile;
-
     QAudioFormat audioFmt;
 
     QAudioOutput *audioOutput;
@@ -79,5 +77,8 @@ private:
     QIODevice *streamOut;
 
     QAudioDeviceInfo info;
+
+    FFmpeg *ffmpeg;
+
 };
 #endif // MAINWINDOW_H
