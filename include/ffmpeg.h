@@ -17,6 +17,10 @@ extern "C" {
 extern int channelCount;
 extern int sampleRate;
 
+enum PlaybackState{
+    None, Play, Pause, Resume
+};
+
 class FFmpeg : public QThread {
 public:
 
@@ -24,13 +28,25 @@ public:
 
     void setVolume(int volume);
 
+    void clickPlayBtn(QIcon &playIcon, QString &toolTip);
+
 private:
 
     void run() override;
 
     void playAudio();
 
+    void play();
+
+    void pause();
+
+    void resume();
+
+    bool playControl();
+
     int musicDuration;
+
+    PlaybackState state;
 
     qreal volume = 1.0;
 

@@ -18,6 +18,40 @@ void FFmpeg::setVolume(int vol) {
     }
 }
 
+void FFmpeg::play() {
+
+}
+
+void FFmpeg::pause() {
+    if (this->isRunning()) {
+        state = Pause;
+    }
+}
+
+void FFmpeg::resume() {
+    if (this->isRunning()) {
+        state = Resume;
+    }
+}
+
+bool FFmpeg::playControl() {
+    bool res = false;
+    if (state == Pause) {
+        while (state == Pause) {
+            std::cout << "state = " << state << std::endl;
+            audioOutput->suspend();
+            msleep(500);
+        }
+
+        if (state == Resume) audioOutput->resume();
+    } else if (state == Play) {
+        res = true;
+        if (audioOutput->state() == QAudio::ActiveState)
+            audioOutput->stop();
+    }
+    return res;
+}
+
 void FFmpeg::playAudio() {
 
     // Init audio stream index
@@ -132,26 +166,39 @@ void FFmpeg::playAudio() {
     // Use Packet & Frame to decode
     AVPacket *pkt = av_packet_alloc(); // freed using av_packet_free().
     AVFrame *frame = av_frame_alloc(); // freed using av_frame_free().
-    while (0 <= av_read_frame(pAVFmtCtx, pkt)) {
-        if (audioStreamIdx == pkt->stream_index) {
+    while (true) {
 
-            // Decode
-            if (0 <= avcodec_send_packet(pAVCodecCtx, pkt)) {
+        if (playControl()) break;
 
-                // Receive frame
-                while (0 <= avcodec_receive_frame(pAVCodecCtx, frame)) {
-                    int len = swr_convert(swrCtx, &audio_out_buffer, MAX_AUDIO_FRAME_SIZE * 2, (const uint8_t **) frame->data, frame->nb_samples);
-                    if (0 > len) continue;
-                    int out_size = av_samples_get_buffer_size(nullptr, out_channels, len, out_sample_fmt, 1);
-                    sleepTime = (out_sample_rate * 16 * out_channels / 8) / out_size;
-                    if (out_size > audioOutput->bytesFree()) QTest::qSleep(sleepTime);
+        while (0 <= av_read_frame(pAVFmtCtx, pkt)) {
+            if (audioStreamIdx == pkt->stream_index) {
+
+                // Decode
+                if (0 <= avcodec_send_packet(pAVCodecCtx, pkt)) {
+
+                    // Receive frame
+                    while (0 <= avcodec_receive_frame(pAVCodecCtx, frame)) {
+
+                        if (playControl()) break;
+
+                        int len = swr_convert(swrCtx, &audio_out_buffer, MAX_AUDIO_FRAME_SIZE * 2,
+                                              (const uint8_t **) frame->data, frame->nb_samples);
+                        if (0 > len) continue;
+                        int out_size = av_samples_get_buffer_size(nullptr, out_channels, len, out_sample_fmt, 1);
+                        sleepTime = (out_sample_rate * 16 * out_channels / 8) / out_size;
+                        if (out_size > audioOutput->bytesFree()) {
+                            if (playControl()) break;
+                            msleep(sleepTime);
+                        }
                     std::cout << "volume = " << this->volume << std::endl;
-                    streamOut->write((char *)audio_out_buffer, out_size);
-                    std::cout << "QAudio State = " << audioOutput->error() << std::endl;
+                        if (!playControl())
+                            streamOut->write((char *) audio_out_buffer, out_size);
+//                    std::cout << "QAudio State = " << audioOutput->error() << std::endl;
+                    }
                 }
             }
+            av_packet_unref(pkt);
         }
-        av_packet_unref(pkt);
     }
 
     // Free all
@@ -161,4 +208,16 @@ void FFmpeg::playAudio() {
     avcodec_free_context(&pAVCodecCtx);
     avformat_free_context(pAVFmtCtx);
 
+}
+
+void FFmpeg::clickPlayBtn(QIcon &playIcon, QString &toolTip) {
+    if (audioOutput->state() == QAudio::ActiveState) {
+        this->pause();
+        playIcon.addFile("../resource/icon/play.png");
+        toolTip = "Play";
+    } else {
+        this->resume();
+        playIcon.addFile("../resource/icon/pause.png");
+        toolTip = "Pause";
+    }
 }

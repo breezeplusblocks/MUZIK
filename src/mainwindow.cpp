@@ -55,15 +55,16 @@ void MainWindow::on_pBtnPlay_clicked() {
 
     QIcon playIcon = ui->pBtnPlay->icon();
     QString toolTip;
-    if (audioOutput->state() == QAudio::ActiveState) {
-        audioOutput->suspend();
-        playIcon.addFile("../resource/icon/play.png");
-        toolTip = "Play";
-    } else {
-        audioOutput->resume();
-        playIcon.addFile("../resource/icon/pause.png");
-        toolTip = "Pause";
-    }
+//    if (audioOutput->state() == QAudio::ActiveState) {
+//        audioOutput->suspend();
+//        playIcon.addFile("../resource/icon/play.png");
+//        toolTip = "Play";
+//    } else {
+//        audioOutput->resume();
+//        playIcon.addFile("../resource/icon/pause.png");
+//        toolTip = "Pause";
+//    }
+    ffmpeg->clickPlayBtn(playIcon, toolTip);
     ui->pBtnPlay->setIcon(playIcon);
     ui->pBtnPlay->setToolTip(toolTip);
     playStatus = !playStatus;
