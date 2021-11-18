@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     playMode = 0;
     muteStatus = false;
 
-    // set default volume 50
-    volume = 50;
+    // set default volume 100
+    volume = 100;
     ui->horizontalSliderVolume->setValue(volume);
 
     // set duration label according to the music info
@@ -110,12 +110,16 @@ void MainWindow::on_pBtnVolume_clicked() {
 
         // set the volume slider to the value of the variable volume
         ui->horizontalSliderVolume->setValue(volume);
+
+        ffmpeg->setVolume(volume);
     } else {
         volumeIcon.addFile("../resource/icon/mute.png");
 
         // save the volume slider to variable volume and then set the volume slider to zero.
         volume = ui->horizontalSliderVolume->value();
         ui->horizontalSliderVolume->setValue(0);
+
+        ffmpeg->setVolume(0);
     }
     ui->pBtnVolume->setIcon(volumeIcon);
     muteStatus = !muteStatus;
@@ -129,9 +133,9 @@ void MainWindow::on_horizontalSliderPlayProgress_valueChanged(int time) {
 
 }
 
-void MainWindow::on_horizontalSliderVolume_valueChanged(int volume) {
+void MainWindow::on_horizontalSliderVolume_valueChanged(int vol) {
 
-    std::cout << volume << std::endl;
+    if (ffmpeg) ffmpeg->setVolume(vol);
 
 }
 

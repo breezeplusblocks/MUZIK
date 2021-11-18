@@ -22,6 +22,8 @@ public:
 
     void init(const QString &audioFilePath);
 
+    void setVolume(int volume);
+
 private:
 
     void run() override;
@@ -29,6 +31,8 @@ private:
     void playAudio();
 
     int musicDuration;
+
+    qreal volume = 1.0;
 
     QString audioPath;
 

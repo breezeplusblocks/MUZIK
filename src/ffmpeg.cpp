@@ -9,6 +9,15 @@ void FFmpeg::init(const QString &audioFilePath) {
     this->audioPath = audioFilePath;
 }
 
+void FFmpeg::setVolume(int vol) {
+    if (this->audioOutput) {
+//        volume = QAudio::convertVolume(vol / qreal(100.0), QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale);
+        volume = vol / qreal(100.0);
+//        std::cout << "volume = " << volume << std::endl;
+        audioOutput->setVolume(volume);
+    }
+}
+
 void FFmpeg::playAudio() {
 
     // Init audio stream index
@@ -136,7 +145,9 @@ void FFmpeg::playAudio() {
                     int out_size = av_samples_get_buffer_size(nullptr, out_channels, len, out_sample_fmt, 1);
                     sleepTime = (out_sample_rate * 16 * out_channels / 8) / out_size;
                     if (out_size > audioOutput->bytesFree()) QTest::qSleep(sleepTime);
+                    std::cout << "volume = " << this->volume << std::endl;
                     streamOut->write((char *)audio_out_buffer, out_size);
+                    std::cout << "QAudio State = " << audioOutput->error() << std::endl;
                 }
             }
         }
