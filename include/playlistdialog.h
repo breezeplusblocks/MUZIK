@@ -19,6 +19,8 @@ signals:
 
     void playAudio(QString audioPath);
 
+    void pBtnPlayChange();
+
 private slots:
     void on_pBtnAdd_clicked();
     

@@ -2,6 +2,7 @@
 #include <iostream>
 
 void FFmpeg::run() {
+    if (state == Pause) state = Resume;
     this->playAudio();
 }
 
@@ -190,7 +191,7 @@ void FFmpeg::playAudio() {
                             if (playControl()) break;
                             msleep(sleepTime);
                         }
-                    std::cout << "volume = " << this->volume << std::endl;
+//                    std::cout << "volume = " << this->volume << std::endl;
                         if (!playControl())
                             streamOut->write((char *) audio_out_buffer, out_size);
 //                    std::cout << "QAudio State = " << audioOutput->error() << std::endl;

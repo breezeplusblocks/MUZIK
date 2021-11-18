@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <QTime>
+#include <QThread>
 
 int channelCount;
 int sampleRate;
@@ -19,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(plDialog, &QDialog::rejected, this, &MainWindow::setPlaylistDialogPos);
 
     connect(plDialog, &PlaylistDialog::playAudio, this, &MainWindow::playAudio);
+
+    connect(plDialog, &PlaylistDialog::pBtnPlayChange, this, &MainWindow::pBtnPlayChange);
 
     playStatus = false;
     playMode = 0;
@@ -55,15 +58,6 @@ void MainWindow::on_pBtnPlay_clicked() {
 
     QIcon playIcon = ui->pBtnPlay->icon();
     QString toolTip;
-//    if (audioOutput->state() == QAudio::ActiveState) {
-//        audioOutput->suspend();
-//        playIcon.addFile("../resource/icon/play.png");
-//        toolTip = "Play";
-//    } else {
-//        audioOutput->resume();
-//        playIcon.addFile("../resource/icon/pause.png");
-//        toolTip = "Pause";
-//    }
     ffmpeg->clickPlayBtn(playIcon, toolTip);
     ui->pBtnPlay->setIcon(playIcon);
     ui->pBtnPlay->setToolTip(toolTip);
@@ -159,7 +153,17 @@ void MainWindow::setPlaylistDialogPos() {
 }
 
 void MainWindow::playAudio(const QString& audioPath) {
+    std::cout << "isRunning = " << ffmpeg->isRunning() << std::endl;
+    if (ffmpeg->isRunning()) ffmpeg->terminate();
+    QThread::msleep(500);
     ffmpeg->init(audioPath);
     ffmpeg->start();
 }
 
+void MainWindow::pBtnPlayChange() {
+    QIcon playIcon = ui->pBtnPlay->icon();
+    playIcon.addFile("../resource/icon/pause.png");
+    QString toolTip = "Pause";
+    ui->pBtnPlay->setIcon(playIcon);
+    ui->pBtnPlay->setToolTip(toolTip);
+}

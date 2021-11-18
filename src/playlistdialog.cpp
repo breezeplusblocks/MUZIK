@@ -53,4 +53,6 @@ void PlaylistDialog::on_listWidget_doubleClicked() {
 
     emit playAudio(audioPath);
 
+    emit pBtnPlayChange();
+
 }
