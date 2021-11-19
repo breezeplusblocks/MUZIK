@@ -23,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(plDialog, &PlaylistDialog::pBtnPlayChange, this, &MainWindow::pBtnPlayChange);
 
-    playStatus = false;
     playMode = 0;
     muteStatus = false;
 
@@ -52,22 +51,65 @@ void MainWindow::on_pBtnPrev_clicked() {
 
     std::cout << "Previous" << std::endl;
 
+    QIcon playIcon = ui->pBtnPlay->icon();
+    QString toolTip;
+    const QString &prevFileName = plDialog->getPrevFileName();
+    if (ffmpeg->isRunning() && !prevFileName.isEmpty()) {
+        ffmpeg->terminate();
+        QThread::msleep(500);
+        ffmpeg->init(prevFileName);
+        ffmpeg->start();
+        playIcon.addFile("../resource/icon/pause.png");
+        toolTip = "Pause";
+    } else {
+        ffmpeg->clickPlayBtn(playIcon, toolTip);
+    }
+    ui->pBtnPlay->setIcon(playIcon);
+    ui->pBtnPlay->setToolTip(toolTip);
+
+    std::cout << prevFileName.toLocal8Bit().data() << std::endl;
+
 }
 
 void MainWindow::on_pBtnPlay_clicked() {
 
     QIcon playIcon = ui->pBtnPlay->icon();
     QString toolTip;
-    ffmpeg->clickPlayBtn(playIcon, toolTip);
+    const QString &curFileName = plDialog->getFirstOrSelectedFileName();
+    if (!ffmpeg->isRunning() && !curFileName.isEmpty()) {
+        ffmpeg->init(curFileName);
+        ffmpeg->start();
+        playIcon.addFile("../resource/icon/pause.png");
+        toolTip = "Pause";
+    } else {
+        ffmpeg->clickPlayBtn(playIcon, toolTip);
+    }
     ui->pBtnPlay->setIcon(playIcon);
     ui->pBtnPlay->setToolTip(toolTip);
-    playStatus = !playStatus;
 
 }
 
 void MainWindow::on_pBtnNext_clicked() {
 
     std::cout << "Next" << std ::endl;
+
+    QIcon playIcon = ui->pBtnPlay->icon();
+    QString toolTip;
+    const QString &nextFileName = plDialog->getNextFileName();
+    if (ffmpeg->isRunning() && !nextFileName.isEmpty()) {
+        ffmpeg->terminate();
+        QThread::msleep(500);
+        ffmpeg->init(nextFileName);
+        ffmpeg->start();
+        playIcon.addFile("../resource/icon/pause.png");
+        toolTip = "Pause";
+    } else {
+        ffmpeg->clickPlayBtn(playIcon, toolTip);
+    }
+    ui->pBtnPlay->setIcon(playIcon);
+    ui->pBtnPlay->setToolTip(toolTip);
+
+    std::cout << nextFileName.toLocal8Bit().data() << std::endl;
 
 }
 

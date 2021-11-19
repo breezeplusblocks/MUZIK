@@ -15,6 +15,12 @@ public:
     explicit PlaylistDialog(QWidget *parent = nullptr);
     ~PlaylistDialog();
 
+    QString getFirstOrSelectedFileName();
+
+    QString getPrevFileName();
+
+    QString getNextFileName();
+
 signals:
 
     void playAudio(QString audioPath);
