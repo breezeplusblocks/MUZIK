@@ -49,66 +49,12 @@ void PlaylistDialog::on_listWidget_doubleClicked() {
 
     std::cout << ui->listWidget->currentItem()->text().toStdString() << std::endl;
 
-    QString audioPath = ui->listWidget->currentItem()->text();
-
-    emit playAudio(audioPath);
+    emit playAudio(ui->listWidget->currentItem());
 
     emit pBtnPlayChange();
 
 }
 
-QString PlaylistDialog::getFirstOrSelectedFileName() {
-    QString currentOrFirstFile;
-    QListWidget *listWidget = ui->listWidget;
-    if (listWidget) {
-        QListWidgetItem *currentItem = ui->listWidget->currentItem();
-        if (currentItem) {
-            currentOrFirstFile = currentItem->text();
-        } else {
-            currentItem = listWidget->item(0);
-            currentItem->setSelected(true);
-            listWidget->setCurrentItem(currentItem);
-            currentOrFirstFile = currentItem->text();
-        }
-    }
-    return currentOrFirstFile;
-}
-
-QString PlaylistDialog::getPrevFileName() {
-    QString prevFile;
-    QListWidget *listWidget = ui->listWidget;
-    if (listWidget && listWidget->count() > 1) {
-        QListWidgetItem *currentItem = ui->listWidget->currentItem();
-        if (currentItem) {
-            int curRow = listWidget->row(currentItem);
-            if (curRow > 0) {
-                currentItem = listWidget->item(curRow - 1);
-                currentItem->setSelected(true);
-                listWidget->setCurrentItem(currentItem);
-                prevFile = currentItem->text();
-            }
-        }
-    }
-    return prevFile;
-}
-
-QString PlaylistDialog::getNextFileName() {
-    QString nextFile;
-    QListWidget *listWidget = ui->listWidget;
-    if (listWidget) {
-        int count = listWidget->count();
-        if (count > 1) {
-            QListWidgetItem *currentItem = ui->listWidget->currentItem();
-            if (currentItem) {
-                int curRow = listWidget->row(currentItem);
-                if (curRow < count - 1) {
-                    currentItem = listWidget->item(curRow + 1);
-                    currentItem->setSelected(true);
-                    listWidget->setCurrentItem(currentItem);
-                    nextFile = currentItem->text();
-                }
-            }
-        }
-    }
-    return nextFile;
+QListWidget *PlaylistDialog::getQListWidget() {
+    return ui->listWidget;
 }

@@ -2,6 +2,7 @@
 #define PLAYLISTDIALOG_H
 
 #include <QDialog>
+#include <QListWidget>
 
 namespace Ui {
 class PlaylistDialog;
@@ -15,15 +16,11 @@ public:
     explicit PlaylistDialog(QWidget *parent = nullptr);
     ~PlaylistDialog();
 
-    QString getFirstOrSelectedFileName();
-
-    QString getPrevFileName();
-
-    QString getNextFileName();
+    QListWidget *getQListWidget();
 
 signals:
 
-    void playAudio(QString audioPath);
+    void playAudio(QListWidgetItem *item);
 
     void pBtnPlayChange();
 

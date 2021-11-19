@@ -50,15 +50,30 @@ MainWindow::~MainWindow()
 void MainWindow::on_pBtnPrev_clicked() {
 
     QIcon playIcon = ui->pBtnPlay->icon();
-    QString toolTip;
-    const QString &prevFileName = plDialog->getPrevFileName();
-    if (ffmpeg->isRunning() && !prevFileName.isEmpty()) {
-        ffmpeg->terminate();
-        QThread::msleep(500);
-        ffmpeg->init(prevFileName);
+    QString prevFileName;
+    QListWidget *listWidget = plDialog->getQListWidget();
+    QListWidgetItem *currentItem;
+    if (listWidget && listWidget->count() > 1) {
+        currentItem = listWidget->currentItem();
+        if (currentItem) {
+            int curRow = listWidget->row(currentItem);
+            if (curRow > 0) {
+                currentItem = listWidget->item(curRow - 1);
+                currentItem->setSelected(true);
+                listWidget->setCurrentItem(currentItem);
+                prevFileName = currentItem->text();
+            }
+        }
+    }
+    if (!prevFileName.isEmpty()) {
+        if (ffmpeg->isRunning()) {
+            ffmpeg->terminate();
+            QThread::msleep(500);
+        }
+        ffmpeg->init(prevFileName, listWidget, currentItem, this->ui->pBtnPlay);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
-        toolTip = "Pause";
+        QString toolTip = "Pause";
         ui->pBtnPlay->setIcon(playIcon);
         ui->pBtnPlay->setToolTip(toolTip);
     }
@@ -71,9 +86,22 @@ void MainWindow::on_pBtnPlay_clicked() {
 
     QIcon playIcon = ui->pBtnPlay->icon();
     QString toolTip;
-    const QString &curFileName = plDialog->getFirstOrSelectedFileName();
+    QString curFileName;
+    QListWidget *listWidget = plDialog->getQListWidget();
+    QListWidgetItem *currentItem;
+    if (listWidget) {
+        currentItem = listWidget->currentItem();
+        if (currentItem) {
+            curFileName = currentItem->text();
+        } else {
+            currentItem = listWidget->item(0);
+            currentItem->setSelected(true);
+            listWidget->setCurrentItem(currentItem);
+            curFileName = currentItem->text();
+        }
+    }
     if (!ffmpeg->isRunning() && !curFileName.isEmpty()) {
-        ffmpeg->init(curFileName);
+        ffmpeg->init(curFileName, listWidget, currentItem, this->ui->pBtnPlay);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
         toolTip = "Pause";
@@ -88,15 +116,31 @@ void MainWindow::on_pBtnPlay_clicked() {
 void MainWindow::on_pBtnNext_clicked() {
 
     QIcon playIcon = ui->pBtnPlay->icon();
-    QString toolTip;
-    const QString &nextFileName = plDialog->getNextFileName();
+    QString nextFileName;
+    QListWidget *listWidget = plDialog->getQListWidget();
+    QListWidgetItem *currentItem;
+    if (listWidget) {
+        int count = listWidget->count();
+        if (count > 1) {
+            currentItem = listWidget->currentItem();
+            if (currentItem) {
+                int curRow = listWidget->row(currentItem);
+                if (curRow < count - 1) {
+                    currentItem = listWidget->item(curRow + 1);
+                    currentItem->setSelected(true);
+                    listWidget->setCurrentItem(currentItem);
+                    nextFileName = currentItem->text();
+                }
+            }
+        }
+    }
     if (ffmpeg->isRunning() && !nextFileName.isEmpty()) {
         ffmpeg->terminate();
         QThread::msleep(500);
-        ffmpeg->init(nextFileName);
+        ffmpeg->init(nextFileName, listWidget, currentItem, this->ui->pBtnPlay);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
-        toolTip = "Pause";
+        QString toolTip = "Pause";
         ui->pBtnPlay->setIcon(playIcon);
         ui->pBtnPlay->setToolTip(toolTip);
     }
@@ -106,6 +150,8 @@ void MainWindow::on_pBtnNext_clicked() {
 }
 
 void MainWindow::on_pBtnPlayMode_clicked() {
+
+    std::cout << "isFinished = " << ffmpeg->isFinished() << std::endl;
 
     QIcon playModeIcon = ui->pBtnPlayMode->icon();
     QString toolTip;
@@ -186,11 +232,10 @@ void MainWindow::setPlaylistDialogPos() {
 
 }
 
-void MainWindow::playAudio(const QString& audioPath) {
-    std::cout << "isRunning = " << ffmpeg->isRunning() << std::endl;
+void MainWindow::playAudio(QListWidgetItem *item) {
     if (ffmpeg->isRunning()) ffmpeg->terminate();
     QThread::msleep(500);
-    ffmpeg->init(audioPath);
+    ffmpeg->init(item->text(), plDialog->getQListWidget(), item, ui->pBtnPlay);
     ffmpeg->start();
 }
 

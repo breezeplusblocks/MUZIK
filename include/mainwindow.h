@@ -51,7 +51,7 @@ private slots:
 
     void setPlaylistDialogPos();
 
-    void playAudio(const QString& audioPath);
+    void playAudio(QListWidgetItem *item);
 
     void pBtnPlayChange();
 

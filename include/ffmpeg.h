@@ -4,6 +4,8 @@
 #include <QAudioOutput>
 #include <QAudioDeviceInfo>
 #include <QThread>
+#include <QListWidget>
+#include <QPushButton>
 #include <QtTest/QTest>
 
 extern "C" {
@@ -18,13 +20,13 @@ extern int channelCount;
 extern int sampleRate;
 
 enum PlaybackState{
-    None, Play, Pause, Resume
+    None, Play, Pause, Resume, Stop
 };
 
 class FFmpeg : public QThread {
 public:
 
-    void init(const QString &audioFilePath);
+    void init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay);
 
     void setVolume(int volume);
 
@@ -59,6 +61,12 @@ private:
     QIODevice *streamOut;
 
     QAudioDeviceInfo info;
+
+    QListWidget *listWidget;
+
+    QListWidgetItem *listWidgetItem;
+
+    QPushButton *playButton;
 
 };
 

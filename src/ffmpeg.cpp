@@ -2,12 +2,36 @@
 #include <iostream>
 
 void FFmpeg::run() {
-    if (state == Pause) state = Resume;
-    this->playAudio();
+    while (true) {
+        if (state == Pause) {
+            state = Resume;
+        } else if (state == Stop) {
+            state = Resume;
+            int curRow = listWidget->row(listWidgetItem);
+            if (curRow + 1 < listWidget->count()) {
+                QListWidgetItem *nextItem = listWidget->item(curRow + 1);
+                nextItem->setSelected(true);
+                listWidget->setCurrentItem(nextItem);
+                audioPath = nextItem->text();
+                QThread::msleep(500);
+            } else {
+                QIcon icon = playButton->icon();
+                icon.addFile("../resource/icon/play.png");
+                QString toolTip = "Play";
+                playButton->setIcon(icon);
+                playButton->setToolTip(toolTip);
+                this->terminate();
+            }
+        }
+        this->playAudio();
+    }
 }
 
-void FFmpeg::init(const QString &audioFilePath) {
+void FFmpeg::init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay) {
     this->audioPath = audioFilePath;
+    this->listWidget = qListWidget;
+    this->listWidgetItem = item;
+    this->playButton = pBtnPlay;
 }
 
 void FFmpeg::setVolume(int vol) {
@@ -49,6 +73,8 @@ bool FFmpeg::playControl() {
         res = true;
         if (audioOutput->state() == QAudio::ActiveState)
             audioOutput->stop();
+    } else if (state == Stop) {
+        res = true;
     }
     return res;
 }
@@ -200,6 +226,9 @@ void FFmpeg::playAudio() {
             }
             av_packet_unref(pkt);
         }
+
+        state = Stop;
+
     }
 
     // Free all
