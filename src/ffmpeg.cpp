@@ -102,11 +102,12 @@ void FFmpeg::playAudio() {
         exit(-1);
     }
 
-    // Get audio file duration
+    // Get audio file duration and init the slider
     musicDuration = pAVFmtCtx->duration / AV_TIME_BASE;
     QString duration = QTime(0,0,0).addSecs(musicDuration).toString(QString::fromStdString("hh:mm:ss"));
     labelDuration->setText(duration);
     sliderPlayProgress->setMaximum(musicDuration);
+    sliderPlayProgress->setDisabled(false);
 
     // Setup audioStreamIdx if there is an audio stream in opened file
     for (unsigned i = 0; i < pAVFmtCtx->nb_streams; ++i) {

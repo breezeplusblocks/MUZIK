@@ -34,6 +34,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->horizontalSliderPlayProgress->setMinimum(0);
     ui->horizontalSliderPlayProgress->setSingleStep(1);
 
+    // disable the play progress slider
+    ui->horizontalSliderPlayProgress->setDisabled(true);
+
     ffmpeg = new FFmpeg;
 
 }
