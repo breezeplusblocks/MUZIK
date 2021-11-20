@@ -31,11 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->horizontalSliderVolume->setValue(volume);
 
     // set duration label according to the music info
-    musicDuration = 378;
-    QString duration = QTime(0,0,0).addSecs(musicDuration).toString(QString::fromStdString("hh:mm:ss"));
-    ui->labelDuration->setText(duration);
     ui->horizontalSliderPlayProgress->setMinimum(0);
-    ui->horizontalSliderPlayProgress->setMaximum(musicDuration);
     ui->horizontalSliderPlayProgress->setSingleStep(1);
 
     ffmpeg = new FFmpeg;
@@ -70,7 +66,7 @@ void MainWindow::on_pBtnPrev_clicked() {
             ffmpeg->terminate();
             QThread::msleep(500);
         }
-        ffmpeg->init(prevFileName, listWidget, currentItem, this->ui->pBtnPlay);
+        ffmpeg->init(prevFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
         QString toolTip = "Pause";
@@ -101,7 +97,7 @@ void MainWindow::on_pBtnPlay_clicked() {
         }
     }
     if (!ffmpeg->isRunning() && !curFileName.isEmpty()) {
-        ffmpeg->init(curFileName, listWidget, currentItem, this->ui->pBtnPlay);
+        ffmpeg->init(curFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
         toolTip = "Pause";
@@ -137,7 +133,7 @@ void MainWindow::on_pBtnNext_clicked() {
     if (ffmpeg->isRunning() && !nextFileName.isEmpty()) {
         ffmpeg->terminate();
         QThread::msleep(500);
-        ffmpeg->init(nextFileName, listWidget, currentItem, this->ui->pBtnPlay);
+        ffmpeg->init(nextFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
         QString toolTip = "Pause";
@@ -235,7 +231,7 @@ void MainWindow::setPlaylistDialogPos() {
 void MainWindow::playAudio(QListWidgetItem *item) {
     if (ffmpeg->isRunning()) ffmpeg->terminate();
     QThread::msleep(500);
-    ffmpeg->init(item->text(), plDialog->getQListWidget(), item, ui->pBtnPlay);
+    ffmpeg->init(item->text(), plDialog->getQListWidget(), item, ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
     ffmpeg->start();
 }
 

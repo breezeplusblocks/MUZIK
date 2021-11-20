@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QListWidget>
 #include <QPushButton>
+#include <QLabel>
 #include <QtTest/QTest>
 
 extern "C" {
@@ -26,7 +27,7 @@ enum PlaybackState{
 class FFmpeg : public QThread {
 public:
 
-    void init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay);
+    void init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay, QSlider *timeSlider, QLabel *durationLabel);
 
     void setVolume(int volume);
 
@@ -67,6 +68,10 @@ private:
     QListWidgetItem *listWidgetItem;
 
     QPushButton *playButton;
+
+    QSlider *sliderPlayProgress;
+
+    QLabel *labelDuration;
 
 };
 

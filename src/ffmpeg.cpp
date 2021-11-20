@@ -27,11 +27,13 @@ void FFmpeg::run() {
     }
 }
 
-void FFmpeg::init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay) {
+void FFmpeg::init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay, QSlider *timeSlider, QLabel *durationLabel) {
     this->audioPath = audioFilePath;
     this->listWidget = qListWidget;
     this->listWidgetItem = item;
     this->playButton = pBtnPlay;
+    this->sliderPlayProgress = timeSlider;
+    this->labelDuration = durationLabel;
 }
 
 void FFmpeg::setVolume(int vol) {
@@ -102,6 +104,9 @@ void FFmpeg::playAudio() {
 
     // Get audio file duration
     musicDuration = pAVFmtCtx->duration / AV_TIME_BASE;
+    QString duration = QTime(0,0,0).addSecs(musicDuration).toString(QString::fromStdString("hh:mm:ss"));
+    labelDuration->setText(duration);
+    sliderPlayProgress->setMaximum(musicDuration);
 
     // Setup audioStreamIdx if there is an audio stream in opened file
     for (unsigned i = 0; i < pAVFmtCtx->nb_streams; ++i) {
