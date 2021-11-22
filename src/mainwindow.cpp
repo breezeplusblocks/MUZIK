@@ -56,8 +56,11 @@ void MainWindow::on_pBtnPrev_clicked() {
         currentItem = listWidget->currentItem();
         if (currentItem) {
             int curRow = listWidget->row(currentItem);
-            if (curRow > 0) {
-                currentItem = listWidget->item(curRow - 1);
+            if (PLAY_MODE_ORDER == this->playMode && 0 == curRow) {
+            } else {
+                int total = listWidget->count();
+                int row = ffmpeg->getNextRowNum(curRow, total, false);
+                currentItem = listWidget->item(row);
                 currentItem->setSelected(true);
                 listWidget->setCurrentItem(currentItem);
                 prevFileName = currentItem->text();
@@ -124,8 +127,11 @@ void MainWindow::on_pBtnNext_clicked() {
             currentItem = listWidget->currentItem();
             if (currentItem) {
                 int curRow = listWidget->row(currentItem);
-                if (curRow < count - 1) {
-                    currentItem = listWidget->item(curRow + 1);
+                if (PLAY_MODE_ORDER == this->playMode && curRow + 1 == count) {
+                } else {
+                    int total = listWidget->count();
+                    int row = ffmpeg->getNextRowNum(curRow, total, true);
+                    currentItem = listWidget->item(row);
                     currentItem->setSelected(true);
                     listWidget->setCurrentItem(currentItem);
                     nextFileName = currentItem->text();

@@ -42,6 +42,8 @@ public:
 
     void clickPlayBtn(QIcon &playIcon, QString &toolTip);
 
+    int getNextRowNum(int cur, int total, bool next);
+
 private:
 
     void run() override;
@@ -82,7 +84,7 @@ private:
 
     QLabel *labelDuration;
 
-    enum PlayMode playMode;
+    enum PlayMode playMode = PLAY_MODE_ORDER;
 
 };
 

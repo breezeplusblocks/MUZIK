@@ -8,19 +8,21 @@ void FFmpeg::run() {
         } else if (state == Stop) {
             state = Resume;
             int curRow = listWidget->row(listWidgetItem);
-            if (curRow + 1 < listWidget->count()) {
-                QListWidgetItem *nextItem = listWidget->item(curRow + 1);
-                nextItem->setSelected(true);
-                listWidget->setCurrentItem(nextItem);
-                audioPath = nextItem->text();
-                QThread::msleep(500);
-            } else {
+            int total = listWidget->count();
+            if (PLAY_MODE_ORDER == playMode && curRow + 1 == total) {
                 QIcon icon = playButton->icon();
                 icon.addFile("../resource/icon/play.png");
                 QString toolTip = "Play";
                 playButton->setIcon(icon);
                 playButton->setToolTip(toolTip);
                 this->terminate();
+            } else {
+                QThread::msleep(500);
+                int row = getNextRowNum(curRow, total, true);
+                listWidgetItem = listWidget->item(row);
+                listWidgetItem->setSelected(true);
+                listWidget->setCurrentItem(listWidgetItem);
+                audioPath = listWidgetItem->text();
             }
         }
         this->playAudio();
@@ -260,4 +262,35 @@ void FFmpeg::clickPlayBtn(QIcon &playIcon, QString &toolTip) {
         playIcon.addFile("../resource/icon/pause.png");
         toolTip = "Pause";
     }
+}
+
+int FFmpeg::getNextRowNum(int cur, int total, bool next) {
+    int row;
+    switch (this->playMode) {
+        case PLAY_MODE_ORDER:
+            if (next) row = cur + 1;
+            else row = cur - 1;
+            break;
+        case PLAY_MODE_SHUFFLE:
+            do {
+                srand((int) time(nullptr));
+                row = rand() % total;
+            } while (row == cur);
+            break;
+        case PLAY_MODE_SINGLE:
+            row = cur;
+            break;
+        case PLAY_MODE_REPEAT:
+            if (next) {
+                if (cur + 1 == total) row = 0;
+                else row = cur + 1;
+            } else {
+                if (0 == cur) row = total - 1;
+                else row = cur - 1;
+            }
+            break;
+        default:
+            break;
+    }
+    return row;
 }
