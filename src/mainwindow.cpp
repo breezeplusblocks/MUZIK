@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(plDialog, &PlaylistDialog::pBtnPlayChange, this, &MainWindow::pBtnPlayChange);
 
-    playMode = 0;
+    playMode = PLAY_MODE_ORDER;
     muteStatus = false;
 
     // set default volume 100
@@ -154,25 +154,27 @@ void MainWindow::on_pBtnPlayMode_clicked() {
 
     QIcon playModeIcon = ui->pBtnPlayMode->icon();
     QString toolTip;
-    if (0 == playMode) {
+    if (PLAY_MODE_ORDER == playMode) {
         playModeIcon.addFile("../resource/icon/shuffle.png");
         toolTip = "Shuffle";
-        ++playMode;
-    } else if (1 == playMode) {
+        playMode = PLAY_MODE_SHUFFLE;
+    } else if (PLAY_MODE_SHUFFLE == playMode) {
         playModeIcon.addFile("../resource/icon/single.png");
         toolTip = "Single";
-        ++playMode;
-    } else if (2 == playMode) {
+        playMode = PLAY_MODE_SINGLE;
+    } else if (PLAY_MODE_SINGLE == playMode) {
         playModeIcon.addFile("../resource/icon/repeat.png");
         toolTip = "Repeat";
-        ++playMode;
-    } else if (3 == playMode) {
+        playMode = PLAY_MODE_REPEAT;
+    } else if (PLAY_MODE_REPEAT == playMode) {
         playModeIcon.addFile("../resource/icon/order.png");
         toolTip = "Order";
-        playMode = 0;
+        playMode = PLAY_MODE_ORDER;
     }
     ui->pBtnPlayMode->setIcon(playModeIcon);
     ui->pBtnPlayMode->setToolTip(toolTip);
+
+    ffmpeg->setPlayMode(playMode);
 
 }
 

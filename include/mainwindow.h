@@ -62,7 +62,7 @@ private:
 
     bool playStatus;
 
-    int playMode;
+    enum PlayMode playMode;
 
     int musicDuration;
 

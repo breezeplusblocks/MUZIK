@@ -20,8 +20,15 @@ extern "C" {
 extern int channelCount;
 extern int sampleRate;
 
-enum PlaybackState{
+enum PlaybackState {
     None, Play, Pause, Resume, Stop
+};
+
+enum PlayMode {
+    PLAY_MODE_ORDER,
+    PLAY_MODE_SHUFFLE,
+    PLAY_MODE_SINGLE,
+    PLAY_MODE_REPEAT
 };
 
 class FFmpeg : public QThread {
@@ -30,6 +37,8 @@ public:
     void init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay, QSlider *timeSlider, QLabel *durationLabel);
 
     void setVolume(int volume);
+
+    void setPlayMode(enum PlayMode mode);
 
     void clickPlayBtn(QIcon &playIcon, QString &toolTip);
 
@@ -72,6 +81,8 @@ private:
     QSlider *sliderPlayProgress;
 
     QLabel *labelDuration;
+
+    enum PlayMode playMode;
 
 };
 

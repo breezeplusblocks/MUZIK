@@ -45,6 +45,10 @@ void FFmpeg::setVolume(int vol) {
     }
 }
 
+void FFmpeg::setPlayMode(enum PlayMode mode) {
+    this->playMode = mode;
+}
+
 void FFmpeg::play() {
 
 }
