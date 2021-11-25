@@ -21,7 +21,7 @@ extern int channelCount;
 extern int sampleRate;
 
 enum PlaybackState {
-    None, Play, Pause, Resume, Stop
+    None, Play, Pause, Resume, Stop, Seek
 };
 
 enum PlayMode {
@@ -34,7 +34,7 @@ enum PlayMode {
 class FFmpeg : public QThread {
 public:
 
-    void init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay, QSlider *timeSlider, QLabel *durationLabel);
+    void init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay, QSlider *timeSlider, QLabel *durationLabel, QLabel *nowLabel);
 
     void setVolume(int volume);
 
@@ -43,6 +43,8 @@ public:
     void clickPlayBtn(QIcon &playIcon, QString &toolTip);
 
     int getNextRowNum(int cur, int total, bool next);
+
+    void sliderValueChange(int curSec);
 
 private:
 
@@ -84,7 +86,17 @@ private:
 
     QLabel *labelDuration;
 
+    QLabel *labelNow;
+
     enum PlayMode playMode = PLAY_MODE_ORDER;
+
+    int curDuration = 0;
+
+    int audioStreamIdx = -1;
+
+    AVFormatContext *pAVFmtCtx = nullptr;
+
+    AVStream *pAVStream;
 
 };
 

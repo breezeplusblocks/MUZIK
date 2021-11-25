@@ -72,7 +72,7 @@ void MainWindow::on_pBtnPrev_clicked() {
             ffmpeg->terminate();
             QThread::msleep(500);
         }
-        ffmpeg->init(prevFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
+        ffmpeg->init(prevFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration, ui->labelNow);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
         QString toolTip = "Pause";
@@ -103,7 +103,7 @@ void MainWindow::on_pBtnPlay_clicked() {
         }
     }
     if (!ffmpeg->isRunning() && !curFileName.isEmpty()) {
-        ffmpeg->init(curFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
+        ffmpeg->init(curFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration, ui->labelNow);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
         toolTip = "Pause";
@@ -142,7 +142,7 @@ void MainWindow::on_pBtnNext_clicked() {
     if (ffmpeg->isRunning() && !nextFileName.isEmpty()) {
         ffmpeg->terminate();
         QThread::msleep(500);
-        ffmpeg->init(nextFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
+        ffmpeg->init(nextFileName, listWidget, currentItem, this->ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration, ui->labelNow);
         ffmpeg->start();
         playIcon.addFile("../resource/icon/pause.png");
         QString toolTip = "Pause";
@@ -212,6 +212,7 @@ void MainWindow::on_horizontalSliderPlayProgress_valueChanged(int time) {
 
     QString now = QTime(0,0,0).addSecs(time).toString(QString::fromStdString("hh:mm:ss"));
     ui->labelNow->setText(now);
+    ffmpeg->sliderValueChange(time);
 
 }
 
@@ -242,7 +243,7 @@ void MainWindow::setPlaylistDialogPos() {
 void MainWindow::playAudio(QListWidgetItem *item) {
     if (ffmpeg->isRunning()) ffmpeg->terminate();
     QThread::msleep(500);
-    ffmpeg->init(item->text(), plDialog->getQListWidget(), item, ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration);
+    ffmpeg->init(item->text(), plDialog->getQListWidget(), item, ui->pBtnPlay, ui->horizontalSliderPlayProgress, ui->labelDuration, ui->labelNow);
     ffmpeg->start();
 }
 

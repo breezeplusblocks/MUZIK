@@ -29,13 +29,14 @@ void FFmpeg::run() {
     }
 }
 
-void FFmpeg::init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay, QSlider *timeSlider, QLabel *durationLabel) {
+void FFmpeg::init(const QString &audioFilePath, QListWidget *qListWidget, QListWidgetItem *item, QPushButton *pBtnPlay, QSlider *timeSlider, QLabel *durationLabel, QLabel *nowLabel) {
     this->audioPath = audioFilePath;
     this->listWidget = qListWidget;
     this->listWidgetItem = item;
     this->playButton = pBtnPlay;
     this->sliderPlayProgress = timeSlider;
     this->labelDuration = durationLabel;
+    this->labelNow = nowLabel;
 }
 
 void FFmpeg::setVolume(int vol) {
@@ -77,6 +78,10 @@ bool FFmpeg::playControl() {
         }
 
         if (state == Resume) audioOutput->resume();
+    } else if (state == Seek) {
+        std::cout << "cur sec = " << curDuration << std::endl;
+        av_seek_frame(pAVFmtCtx, audioStreamIdx, curDuration / av_q2d(pAVStream->time_base), AVSEEK_FLAG_BACKWARD);
+        state = Resume;
     } else if (state == Play) {
         res = true;
         if (audioOutput->state() == QAudio::ActiveState)
@@ -90,9 +95,9 @@ bool FFmpeg::playControl() {
 void FFmpeg::playAudio() {
 
     // Init audio stream index
-    int audioStreamIdx = -1;
+//    int audioStreamIdx = -1;
 
-    AVFormatContext *pAVFmtCtx = nullptr;
+//    AVFormatContext *pAVFmtCtx = nullptr;
     // Open an input stream and read the header.
     // The codecs are not opened. The stream must be closed with avformat_close_input().
     int res = avformat_open_input(&pAVFmtCtx, audioPath.toLocal8Bit().data(), nullptr, nullptr);
@@ -117,7 +122,7 @@ void FFmpeg::playAudio() {
 
     // Setup audioStreamIdx if there is an audio stream in opened file
     for (unsigned i = 0; i < pAVFmtCtx->nb_streams; ++i) {
-        AVStream *pAVStream = pAVFmtCtx->streams[i];
+        pAVStream = pAVFmtCtx->streams[i];
         if (AVMEDIA_TYPE_AUDIO == pAVStream->codecpar->codec_type) {
             audioStreamIdx = i;
             sampleRate = pAVStream->codecpar->sample_rate;
@@ -232,6 +237,10 @@ void FFmpeg::playAudio() {
 //                    std::cout << "volume = " << this->volume << std::endl;
                         if (!playControl())
                             streamOut->write((char *) audio_out_buffer, out_size);
+                        curDuration = av_q2d(pAVStream->time_base) * frame->pts;
+                        QString cur = QTime(0,0,0).addSecs(curDuration).toString(QString::fromStdString("hh:mm:ss"));
+                        this->labelNow->setText(QString(cur));
+                        std::cout << "curDuration = " << cur.toLocal8Bit().data() << std::endl;
 //                    std::cout << "QAudio State = " << audioOutput->error() << std::endl;
                     }
                 }
@@ -293,4 +302,9 @@ int FFmpeg::getNextRowNum(int cur, int total, bool next) {
             break;
     }
     return row;
+}
+
+void FFmpeg::sliderValueChange(int curSec) {
+    this->state = Seek;
+    this->curDuration = curSec;
 }
