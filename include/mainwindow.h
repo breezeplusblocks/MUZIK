@@ -43,7 +43,7 @@ private slots:
 
     void on_pBtnVolume_clicked();
 
-    void on_horizontalSliderPlayProgress_valueChanged(int time);
+    void on_horizontalSliderPlayProgress_sliderMoved(int time);
 
     void on_horizontalSliderVolume_valueChanged(int volume);
 

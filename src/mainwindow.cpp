@@ -208,9 +208,9 @@ void MainWindow::on_pBtnVolume_clicked() {
 
 }
 
-void MainWindow::on_horizontalSliderPlayProgress_valueChanged(int time) {
+void MainWindow::on_horizontalSliderPlayProgress_sliderMoved(int time) {
 
-    QString now = QTime(0,0,0).addSecs(time).toString(QString::fromStdString("hh:mm:ss"));
+    QString now = QTime(0,0,0).addMSecs(time).toString(QString::fromStdString("hh:mm:ss"));
     ui->labelNow->setText(now);
     ffmpeg->sliderValueChange(time);
 

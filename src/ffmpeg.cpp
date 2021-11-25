@@ -80,7 +80,7 @@ bool FFmpeg::playControl() {
         if (state == Resume) audioOutput->resume();
     } else if (state == Seek) {
         std::cout << "cur sec = " << curDuration << std::endl;
-        av_seek_frame(pAVFmtCtx, audioStreamIdx, curDuration / av_q2d(pAVStream->time_base), AVSEEK_FLAG_BACKWARD);
+        av_seek_frame(pAVFmtCtx, audioStreamIdx, curDuration / 1000 / av_q2d(pAVStream->time_base), AVSEEK_FLAG_BACKWARD);
         state = Resume;
     } else if (state == Play) {
         res = true;
@@ -95,9 +95,9 @@ bool FFmpeg::playControl() {
 void FFmpeg::playAudio() {
 
     // Init audio stream index
-//    int audioStreamIdx = -1;
+    audioStreamIdx = -1;
 
-//    AVFormatContext *pAVFmtCtx = nullptr;
+    pAVFmtCtx = nullptr;
     // Open an input stream and read the header.
     // The codecs are not opened. The stream must be closed with avformat_close_input().
     int res = avformat_open_input(&pAVFmtCtx, audioPath.toLocal8Bit().data(), nullptr, nullptr);
@@ -114,11 +114,11 @@ void FFmpeg::playAudio() {
     }
 
     // Get audio file duration and init the slider
-    musicDuration = pAVFmtCtx->duration / AV_TIME_BASE;
-    QString duration = QTime(0,0,0).addSecs(musicDuration).toString(QString::fromStdString("hh:mm:ss"));
-    labelDuration->setText(duration);
-    sliderPlayProgress->setMaximum(musicDuration);
-    sliderPlayProgress->setDisabled(false);
+//    musicDuration = pAVFmtCtx->duration * 1000 / AV_TIME_BASE;
+//    QString duration = QTime(0,0,0).addMSecs(musicDuration).toString(QString::fromStdString("hh:mm:ss"));
+//    labelDuration->setText(duration);
+//    sliderPlayProgress->setMaximum(musicDuration);
+//    sliderPlayProgress->setDisabled(false);
 
     // Setup audioStreamIdx if there is an audio stream in opened file
     for (unsigned i = 0; i < pAVFmtCtx->nb_streams; ++i) {
@@ -134,6 +134,12 @@ void FFmpeg::playAudio() {
         std::cout << "Cannot find audio stream!" << std::endl;
         exit(-1);
     }
+
+    musicDuration = pAVStream->duration * 1000 * av_q2d(pAVStream->time_base);
+    QString duration = QTime(0,0,0).addMSecs(musicDuration).toString(QString::fromStdString("hh:mm:ss"));
+    labelDuration->setText(duration);
+    sliderPlayProgress->setMaximum(musicDuration);
+    sliderPlayProgress->setDisabled(false);
 
     // Setup QAudioFormat parameters
     audioFmt.setSampleRate(sampleRate);
@@ -234,14 +240,12 @@ void FFmpeg::playAudio() {
                             if (playControl()) break;
                             msleep(sleepTime);
                         }
-//                    std::cout << "volume = " << this->volume << std::endl;
                         if (!playControl())
                             streamOut->write((char *) audio_out_buffer, out_size);
-                        curDuration = av_q2d(pAVStream->time_base) * frame->pts;
-                        QString cur = QTime(0,0,0).addSecs(curDuration).toString(QString::fromStdString("hh:mm:ss"));
-                        this->labelNow->setText(QString(cur));
-                        std::cout << "curDuration = " << cur.toLocal8Bit().data() << std::endl;
-//                    std::cout << "QAudio State = " << audioOutput->error() << std::endl;
+                        curDuration = av_q2d(pAVStream->time_base) * 1000 * frame->pts;
+                        QString cur = QTime(0,0,0).addMSecs(curDuration).toString(QString::fromStdString("hh:mm:ss"));
+                        this->labelNow->setText(cur);
+                        this->sliderPlayProgress->setValue(curDuration);
                     }
                 }
             }
